@@ -4,8 +4,8 @@ import {
   PlusCircleIcon,
   RssIcon,
   SearchIcon,
-} from '@heroIcons/react/outline';
-import { HeartIcon } from '@heroIcons/react/solid';
+} from '@heroicons/react/outline';
+import { HeartIcon } from '@heroicons/react/solid';
 
 export interface SidebarMebu {
   id: string;
