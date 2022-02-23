@@ -4,7 +4,7 @@ import { useRecoilState } from 'recoil';
 import { currentTrackIdState, isPlayingState } from '../atoms/songAtom';
 import useSongInfo from '../hooks/useSongInfo';
 import useSpotify from '../hooks/useSpotify';
-import { SwitchHorizontalIcon } from '@heroIcons/react/outline';
+import { SwitchHorizontalIcon } from '@heroicons/react/outline';
 import {
   FastForwardIcon,
   PauseIcon,
