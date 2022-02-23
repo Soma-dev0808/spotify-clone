@@ -13,7 +13,7 @@ import {
   RewindIcon,
   VolumeOffIcon,
   VolumeUpIcon,
-} from '@heroIcons/react/solid';
+} from '@heroicons/react/solid';
 import { debounce } from 'lodash';
 
 import type { NullOrUndefinableType } from '../utilities/types';
