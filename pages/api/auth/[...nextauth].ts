@@ -1,7 +1,7 @@
 import NextAuth, { Account, User } from 'next-auth';
 import SpotifyProvider from 'next-auth/providers/spotify';
 import spotifyApi, { LOGIN_URL } from '../../../utilities/spotify';
-import type { CustomJWT, CustomSession } from '../../../utilities/spotify';
+import type { CustomJWT, CustomSession } from '../../../utilities/types';
 import { checkNullOrUndefined } from '../../../utilities/utilities';
 
 const refreshAccessToken = async (token: CustomJWT): Promise<CustomJWT> => {

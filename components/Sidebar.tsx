@@ -9,7 +9,7 @@ import { playlistIdState } from '../atoms/playlistAtom';
 
 const Sidebar: React.FC = () => {
   const spotifyApi = useSpotify();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [playlists, setPlaylists] = useState<
     SpotifyApi.PlaylistObjectSimplified[]
   >([]);

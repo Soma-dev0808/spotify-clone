@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import SpotifyWebApi from 'spotify-web-api-node';
 import spotifyApi from '../utilities/spotify';
-import type { CustomSession } from '../utilities/spotify';
+
+import SpotifyWebApi from 'spotify-web-api-node';
+import type { CustomSession } from '../utilities/types';
 
 const useSpotify = (): SpotifyWebApi => {
-  const { data, status } = useSession();
+  const { data } = useSession();
 
   const session = data as CustomSession;
 

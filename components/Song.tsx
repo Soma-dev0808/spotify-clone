@@ -1,27 +1,44 @@
-import { useRecoilState } from 'recoil';
-import { currentTrackIdState, isPlayingState } from '../atoms/songAtom';
-import useSpotify from '../hooks/useSpotify';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  currentTrackIdState,
+  deviceIdState,
+  isPlayingState,
+} from '../atoms/songAtom';
 import { millisToMinutesAndSeconds } from '../utilities/time';
+import { togglePlay } from '../utilities/utilities';
+
+import SpotifyWebApi from 'spotify-web-api-node';
 import type { NullOrUndefinableType } from '../utilities/types';
 
 interface SongProps {
   track: SpotifyApi.PlaylistTrackObject;
   order: number;
+  spotifyApi: SpotifyWebApi;
 }
 
-const Song: React.FC<SongProps> = ({ track, order }) => {
-  const spotifyApi = useSpotify();
-  const [, setCurrentTrackId] =
+const Song: React.FC<SongProps> = ({ track, order, spotifyApi }) => {
+  const [currenTrackId, setCurrentTrackId] =
     useRecoilState<NullOrUndefinableType<string>>(currentTrackIdState);
-  const [, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
+  const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
+  const deviceId = useRecoilValue<NullOrUndefinableType<string>>(deviceIdState);
   const _track: SpotifyApi.TrackObjectFull = track.track;
 
+  // Play selected song.
   const playSong = () => {
-    setCurrentTrackId(_track.id);
-    setIsPlaying(true);
-    spotifyApi.play({
-      uris: [_track.uri],
-    });
+    // Click the same song when it's playng.
+    if (currenTrackId === _track.id && isPlaying) {
+      setIsPlaying(false);
+      spotifyApi.pause();
+    }
+    // Play selected song.
+    else {
+      setCurrentTrackId(_track.id);
+      const accessToken = spotifyApi.getAccessToken();
+      if (deviceId && accessToken) {
+        togglePlay({ uri: _track.uri, deviceId, accessToken });
+        setIsPlaying(true);
+      }
+    }
   };
 
   return (
