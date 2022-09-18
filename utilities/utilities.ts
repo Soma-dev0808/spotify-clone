@@ -24,13 +24,14 @@ const checkNullOrUndefined = (value: any): boolean => {
 const togglePlay = ({ uri, deviceId, accessToken }: SpotifyPlaySong) => {
   if (accessToken && deviceId) {
     try {
-      play(accessToken, {
+      return play(accessToken, {
         uris: [uri],
         deviceId,
       });
     } catch (error) {
       handlePlayerError(error);
     }
+
   } else {
     throw new Error('accessToken or deviceId is undefined');
   }
@@ -43,7 +44,7 @@ const togglePlay = ({ uri, deviceId, accessToken }: SpotifyPlaySong) => {
  * @param {SpotifyPlayOptions} options.deviceId device id
  * @param {SpotifyPlayOptions} options.offset object
  * @param {SpotifyPlayOptions} options.uris song uri
- * @returns
+ * @returns {Promise<Response>}
  */
 const play = (
   token: string,
@@ -77,10 +78,21 @@ const play = (
   );
 };
 
+/**
+ *
+ * @param {any} error error info
+ * @returns
+ */
 const handlePlayerError = (error: any) => {
   throw new Error(`There's an error: ${error.message}`);
 };
 
+/**
+ *
+ * @param {number} currVol Current volume
+ * @param {object} isUpObj { isUp: boolean }
+ * @returns
+ */
 const calVolume: CalculateVolumeFunc = (currVol, { isUp }) => {
   if ((isUp && currVol === 100) || (!isUp && currVol === 0)) return currVol;
 
@@ -98,4 +110,27 @@ const calVolume: CalculateVolumeFunc = (currVol, { isUp }) => {
   }
 };
 
-export { checkNullOrUndefined, play, togglePlay, handlePlayerError, calVolume };
+/**
+ *
+ * @param token Spotify access token
+ * @param {SpotifyPlayOptions} options.context_uri context_uri which contains playlist, album or artist info
+ * @param {SpotifyPlayOptions} options.deviceId device id
+ * @param {SpotifyPlayOptions} options.offset object
+ * @param {SpotifyPlayOptions} options.uris song uri
+ * @returns
+ */
+
+interface PlaySong {
+  trackId: string,
+  trackUrl: string,
+  deviceId: string,
+  accessToken: string | undefined,
+}
+
+export {
+  checkNullOrUndefined,
+  play,
+  togglePlay,
+  handlePlayerError,
+  calVolume,
+};

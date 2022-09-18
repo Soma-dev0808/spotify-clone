@@ -17,8 +17,6 @@ const refreshAccessToken = async (token: CustomJWT): Promise<CustomJWT> => {
 
     const { body: refreshedToken } = await spotifyApi.refreshAccessToken();
 
-    console.log('refreshedToken', refreshedToken);
-
     return {
       ...token,
       accessToken: refreshedToken.access_token,
