@@ -2,7 +2,7 @@
 Spotify clone application which you can actually play a song.
 Created with Next.js and Tailwind css.
 
-### [Demo](https://spotify-clone-91jegjyly-soma-dev0808.vercel.app/)
+### [Demo](https://spotify-clone-lqvvronck-soma-dev0808.vercel.app/)
 **🚨You need to get spotify account to use it.**
 
 <img width="450" alt="Screen Shot 2022-09-11 at 11 58 41 AM" src="https://user-images.githubusercontent.com/55787141/189544566-b21d4fab-821a-4feb-959b-017c810e189e.png">
