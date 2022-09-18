@@ -23,8 +23,6 @@ const Sidebar: React.FC = () => {
     }
   }, [session, spotifyApi]);
 
-  console.log('You have picked item. ID: ', playlistId);
-
   return (
     <div className="hidden h-screen overflow-y-scroll border-r border-gray-900 p-5 pb-6 text-xs text-gray-500 scrollbar-hide sm:max-w-[12rem] md:inline-flex lg:max-w-[15rem] lg:text-sm">
       <div className="space-y-4">

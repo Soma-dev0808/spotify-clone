@@ -1,7 +1,9 @@
 import Script from 'next/script';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { playlistState, PlaylistStateType } from '../atoms/playlistAtom';
 import { debounce } from 'lodash';
 import {
   currentTrackIdState,
@@ -10,10 +12,12 @@ import {
 } from '../atoms/songAtom';
 import useSongInfo from '../hooks/useSongInfo';
 import useSpotify from '../hooks/useSpotify';
+import useNextSong from '../hooks/useNextSong';
 import {
   calVolume,
   handlePlayerError,
   checkNullOrUndefined,
+  togglePlay,
 } from '../utilities/utilities';
 
 // icons
@@ -41,22 +45,16 @@ const Player = () => {
   const { data: session } = useSession();
   const spotifyApi = useSpotify();
   const songInfo: SpotifySongInfoType = useSongInfo();
-  const [currenTrackId, setCurrenTrackId] =
+  const nextSongInfo = useNextSong();
+  const [currenTrackId, setCurrentTrackId] =
     useRecoilState<NullOrUndefinableType<string>>(currentTrackIdState);
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const [deviceId, setDeviceId] =
     useRecoilState<NullOrUndefinableType<string>>(deviceIdState);
+  const playlist: PlaylistStateType = useRecoilValue(playlistState);
 
   // Set player section
   useEffect(() => {
-    // Use Script from next.js instead of create script tag manually
-    // const _script = document.createElement('script');
-    // _script.id = 'spotify-player';
-    // _script.type = 'text/javascript';
-    // _script.src = 'https://sdk.scdn.co/spotify-player.js';
-    // _script.async = true;
-    // document.head.appendChild(_script);
-
     const initializePlayer = () => {
       const _player: Spotify.Player = new window.Spotify.Player({
         name: 'Web Spotify Player',
@@ -84,7 +82,7 @@ const Player = () => {
     window.onSpotifyWebPlaybackSDKReady = initializePlayer;
   }, []);
 
-  const setDevice = ({ device_id }: { device_id: string }) => {
+  const setDevice = ({ device_id }: { device_id: string; }) => {
     setDeviceId(device_id);
   };
 
@@ -110,7 +108,7 @@ const Player = () => {
   const fetchCurrenSong = useCallback(() => {
     if (!songInfo) {
       spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        setCurrenTrackId(data.body?.item?.id);
+        setCurrentTrackId(data.body?.item?.id);
 
         spotifyApi.getMyCurrentPlaybackState().then((data) => {
           setIsPlaying(!!data?.body?.is_playing);
@@ -126,7 +124,28 @@ const Player = () => {
     }
   }, [currenTrackId, spotifyApi, session]);
 
-  const handlePlayPause = () => {
+  const handlePlay = async (
+    songToPlay: SpotifyApi.TrackObjectFull,
+    shouldUpdateIsPlaying = false
+  ) => {
+    const track = songToPlay;
+    await togglePlay({
+      uri: track.uri,
+      deviceId,
+      accessToken: spotifyApi.getAccessToken(),
+    });
+    shouldUpdateIsPlaying && setIsPlaying(true);
+    setCurrentTrackId(track.id);
+  };
+
+  const handlePlayPause = async () => {
+    // If there's no music selected yet, do togglePlay.
+    if (!songInfo) {
+      const playListItem = playlist?.tracks.items[0].track;
+      if (!playListItem) return;
+      handlePlay(playListItem);
+    }
+    // If already song selected.
     spotifyApi.getMyCurrentPlaybackState().then((data) => {
       if (data?.body?.is_playing) {
         spotifyApi.pause();
@@ -136,6 +155,18 @@ const Player = () => {
         setIsPlaying(true);
       }
     });
+  };
+
+  // Play next
+  const handlePlayNext = async () => {
+    if (!nextSongInfo.next || !deviceId) return;
+    handlePlay(nextSongInfo.next.track, true);
+  };
+
+  // Play prev
+  const handlePlayPrev = () => {
+    if (!nextSongInfo.prev || !deviceId) return;
+    handlePlay(nextSongInfo.prev.track, true);
   };
 
   const _setVolume = (data: number) => {
@@ -155,9 +186,7 @@ const Player = () => {
     debounce(
       (volume) => spotifyApi.setVolume(volume).catch((err) => console.log(err)),
       500
-    ),
-    []
-  );
+    ), []);
 
   return (
     <>
@@ -168,11 +197,24 @@ const Player = () => {
       <div className="grid h-24 grid-cols-3 bg-gradient-to-b from-black to-gray-900 px-2 text-xs text-white md:px-8 md:text-base">
         {/* Left */}
         <div className="flex items-center space-x-4">
-          <img
-            className="hidden h-10 w-10 md:inline"
-            src={songInfo?.album?.images[0]?.url}
-            alt="album image"
-          />
+
+          {songInfo?.album?.images[0]
+            ? (<img
+              className="hidden h-10 w-10 md:inline"
+              src={songInfo?.album?.images[0].url || './assets/no_image.png'}
+              alt="album image"
+            />)
+            :
+            <div>
+              <Image
+                src={'/assets/no_image.jpg'}
+                width={30}
+                height={30}
+                layout='fixed' />
+              <p className='text-sm text-gray-400'>no image</p>
+            </div>
+          }
+
           <div>
             <h3>{songInfo?.name}</h3>
             <p>{songInfo?.artists[0]?.name}</p>
@@ -181,8 +223,17 @@ const Player = () => {
 
         {/* Center */}
         <div className="flex items-center justify-evenly">
-          <SwitchHorizontalIcon className="button" />
-          <RewindIcon className="button" />
+          <button className="button disabled:cursor-default text-gray-400" disabled>
+            <SwitchHorizontalIcon />
+          </button>
+
+          <button
+            className={`button ${!nextSongInfo.prev && 'disabled:cursor-default text-gray-400'}`}
+            disabled={!nextSongInfo.prev}
+            onClick={handlePlayPrev}
+          >
+            <RewindIcon />
+          </button>
 
           {isPlaying ? (
             <PauseIcon onClick={handlePlayPause} className="button h-10 w-10" />
@@ -190,8 +241,17 @@ const Player = () => {
             <PlayIcon onClick={handlePlayPause} className="button h-10 w-10" />
           )}
 
-          <FastForwardIcon className="button" />
-          <ReplyIcon className="button" />
+          <button
+            className={`button ${!nextSongInfo.next && 'disabled:cursor-default text-gray-400'} `}
+            disabled={!nextSongInfo.next}
+            onClick={handlePlayNext}
+          >
+            <FastForwardIcon />
+          </button>
+
+          <button className="button disabled:cursor-default text-gray-400" disabled>
+            <ReplyIcon />
+          </button>
         </div>
 
         <div className="flex items-center justify-end space-x-3 pr-5 md:space-x-4">

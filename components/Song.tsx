@@ -24,7 +24,7 @@ const Song: React.FC<SongProps> = ({ track, order, spotifyApi }) => {
   const _track: SpotifyApi.TrackObjectFull = track.track;
 
   // Play selected song.
-  const playSong = () => {
+  const playSong = async () => {
     // Click the same song when it's playng.
     if (currenTrackId === _track.id && isPlaying) {
       setIsPlaying(false);
@@ -32,11 +32,15 @@ const Song: React.FC<SongProps> = ({ track, order, spotifyApi }) => {
     }
     // Play selected song.
     else {
-      setCurrentTrackId(_track.id);
       const accessToken = spotifyApi.getAccessToken();
       if (deviceId && accessToken) {
-        togglePlay({ uri: _track.uri, deviceId, accessToken });
+        await togglePlay({
+          uri: _track.uri,
+          deviceId,
+          accessToken
+        });
         setIsPlaying(true);
+        setCurrentTrackId(_track.id);
       }
     }
   };
