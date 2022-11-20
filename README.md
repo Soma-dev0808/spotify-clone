@@ -6,9 +6,9 @@
 <hr>
 
 ## About this app:
- 
-Spotify clone application which you can actually play a song.
-Created with Next.js and Tailwind css.
+
+Spotify clone application which you can actually play songs. Once you connect and login to spotify, this application fetches playlists and songs from 3rd party Spotify api for you. 
+This applications is created with Next.js and Tailwind css.
 
 ### The technology used:
 
