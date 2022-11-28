@@ -15,9 +15,16 @@ const Songs = () => {
     />
   );
 
+  if (!playlist) return null;
+
+  const playlistItems = playlist.tracks.items.filter((item, idx) => {
+    console.log(playlist.tracks.items.indexOf(item) === idx);
+    return playlist.tracks.items.indexOf(item) === idx;
+  });
+
   return (
     <div className="flex flex-col space-y-1 px-8 pb-28 text-white">
-      {playlist?.tracks.items.map(playListMap)}
+      {playlistItems.map(playListMap)}
     </div>
   );
 };
