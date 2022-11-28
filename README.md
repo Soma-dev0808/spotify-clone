@@ -1,7 +1,7 @@
 # Spotify clone app
 
 ### [Application Demo](https://spotify-clone-lqvvronck-soma-dev0808.vercel.app/)
-**🚨You need to get a spotify account to use it.**
+**🚨You need to get a spotify premium account to use it.**
 
 <hr>
 
