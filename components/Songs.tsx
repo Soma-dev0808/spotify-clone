@@ -18,7 +18,6 @@ const Songs = () => {
   if (!playlist) return null;
 
   const playlistItems = playlist.tracks.items.filter((item, idx) => {
-    console.log(playlist.tracks.items.indexOf(item) === idx);
     return playlist.tracks.items.indexOf(item) === idx;
   });
 
