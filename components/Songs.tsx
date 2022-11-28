@@ -8,7 +8,7 @@ const Songs = () => {
   const playlist: PlaylistStateType = useRecoilValue(playlistState);
   const playListMap = (track: SpotifyApi.PlaylistTrackObject, idx: number) => (
     <Song
-      key={track.track.id}
+      key={track.track.id + idx}
       track={track}
       order={idx}
       spotifyApi={spotifyApi}
