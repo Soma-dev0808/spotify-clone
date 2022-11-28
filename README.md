@@ -10,6 +10,11 @@
 Spotify clone application which you can actually play songs. Once you connect and login to spotify, this application fetches playlists and songs from 3rd party Spotify api for you. 
 This applications is created with Next.js and Tailwind css.
 
+If you don't have a premium account, please check the video below.
+
+https://user-images.githubusercontent.com/55787141/204393044-587d9ea4-b13c-483f-9012-f716845d40dd.mp4
+
+
 ### The technology used:
 
  - <img width="20" alt="react logo" src="https://user-images.githubusercontent.com/55787141/192347694-6b5f1118-b7a0-4df7-bf30-98c0586e8771.png"> Next.js
